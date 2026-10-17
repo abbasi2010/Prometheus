@@ -1,4 +1,5 @@
 # test_gemini.py
+import ctypes
 import re
 import subprocess
 from google import genai
@@ -44,13 +45,44 @@ def run_shell(command: str) -> str:
     """Run a zsh command. For files, `open -a`, and system info. Do not use this to ask the user a question."""
     return _run(["zsh", "-c", command], command)
 
+_CG = ctypes.CDLL("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")
+_DS = ctypes.CDLL("/System/Library/PrivateFrameworks/DisplayServices.framework/DisplayServices")
+_CG.CGMainDisplayID.restype = ctypes.c_uint32
+_SET_BRIGHTNESS = _DS.DisplayServicesSetBrightness
+_SET_BRIGHTNESS.argtypes = [ctypes.c_uint32, ctypes.c_float]
+_SET_BRIGHTNESS.restype = ctypes.c_int32
+
+_BRIGHTNESS = re.compile(
+    r"\b(?:set|turn|make)?\s*(?:the\s+|my\s+)?(?:display\s+|screen\s+)?brightness\s+(?:to\s+|at\s+)?(\d+(?:\.\d+)?)(\s*%)?",
+    re.IGNORECASE,
+)
+
+def set_brightness(percent: float) -> str:
+    """Set the main display brightness. percent is 0 to 100. Call this immediately for a brightness request."""
+    level = max(0.0, min(100.0, float(percent))) / 100.0
+    rc = _SET_BRIGHTNESS(_CG.CGMainDisplayID(), ctypes.c_float(level))
+    if rc != 0:
+        return f"Brightness change failed ({rc})."
+    return f"Display brightness set to {level * 100:.0f}%."
+
+def local_action(message: str):
+    """Handle known requests here so they do not wait on a model."""
+    if re.search(r"\bkeyboard\b", message, re.IGNORECASE):
+        return None
+    match = _BRIGHTNESS.search(message)
+    if not match:
+        return None
+    raw = float(match.group(1))
+    percent = raw if match.group(2) or raw > 1 else raw * 100.0
+    return set_brightness(percent)
+
 CONFIG = types.GenerateContentConfig(
-    tools=[ask_user, run_applescript, run_shell],
+    tools=[ask_user, set_brightness, run_applescript, run_shell],
     system_instruction=(
-        "You control a Mac. If the request is ambiguous, call ask_user and wait for the reply "
-        "before any other tool. Never use run_shell or run_applescript to ask questions or to "
-        "search for a command. When you know the command, run one short one, check the result, "
-        "then reply in a sentence."
+        "You control a Mac. For display brightness, call set_brightness once with a percent from 0 to 100. "
+        "If something else is ambiguous, call ask_user before any other tool. "
+        "Never use run_shell or run_applescript to ask questions or to search for a command. "
+        "When you know the command, run one short one, then reply in a sentence."
     ),
 )
 
@@ -105,6 +137,11 @@ def send(message):
     return None
 
 while True:
-    reply = send(input("\n> "))
+    message = input("\n> ")
+    done = local_action(message)
+    if done is not None:
+        print(done)
+        continue
+    reply = send(message)
     if reply is not None:
         print(reply.text)
