@@ -1,6 +1,8 @@
+import brain
 from brain import send
 
 if __name__ == "__main__":
+    brain.prepare_memory()
     while True:
         try:
             reply = send(input("\n> "))
