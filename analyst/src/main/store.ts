@@ -39,6 +39,27 @@ export async function list(company: string): Promise<Entry[]> {
   return entries.filter((entry) => entry.company === key).sort((a, b) => a.at - b.at);
 }
 
+export async function listAll(): Promise<Entry[]> {
+  await ensure();
+  return [...entries].sort((a, b) => a.at - b.at);
+}
+
+export async function highlightsFor(url: string): Promise<Entry[]> {
+  await ensure();
+  const base = url.split("#")[0];
+  return entries.filter((entry) => entry.type === "highlight" && (entry.url || "").split("#")[0] === base);
+}
+
+export async function updateHighlight(entryId: string, note: string, tag: string): Promise<Entry | null> {
+  await ensure();
+  const entry = entries.find((item) => item.id === entryId && item.type === "highlight");
+  if (!entry) return null;
+  entry.note = note;
+  entry.tag = tag;
+  persist();
+  return entry;
+}
+
 export async function add(partial: Omit<Entry, "id" | "at"> & { at?: number }): Promise<Entry> {
   await ensure();
   const entry: Entry = {
@@ -55,6 +76,13 @@ export async function add(partial: Omit<Entry, "id" | "at"> & { at?: number }): 
 export async function remove(entryId: string): Promise<void> {
   await ensure();
   entries = entries.filter((entry) => entry.id !== entryId);
+  persist();
+}
+
+export async function removeCompany(company: string): Promise<void> {
+  await ensure();
+  const key = company.trim().toUpperCase();
+  entries = entries.filter((entry) => entry.company !== key);
   persist();
 }
 
@@ -81,6 +109,7 @@ export async function addHighlight(input: HighlightInput): Promise<Entry> {
     anchor: input.anchor,
     docId: input.docId,
     pinned: false,
+    by: input.by || "user",
   });
 }
 

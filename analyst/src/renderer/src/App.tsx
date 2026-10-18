@@ -252,7 +252,7 @@ function Shell() {
   return (
     <div className="app">
       <aside className="left">
-        <p className="mark">Analyst</p>
+        <p className="mark">Prometheus</p>
         <div className="company">
           <input
             value={companyInput}

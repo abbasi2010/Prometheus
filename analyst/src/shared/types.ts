@@ -26,15 +26,21 @@ export type Chip = {
   anchor?: string;
 };
 
-export type AgentEvent =
+export type AgentEvent = (
   | { type: "user"; text: string }
   | { type: "progress"; text: string }
+  | { type: "step"; text: string; state: "running" | "done" | "failed"; undoId?: string }
   | { type: "token"; text: string }
+  | { type: "replace"; text: string }
   | { type: "source"; chip: Chip }
   | { type: "error"; text: string }
   | { type: "done" }
   | { type: "summary-token"; text: string }
-  | { type: "summary-done" };
+  | { type: "summary-done" }
+  | { type: "team"; teamId: string; jobs: { id: string; title: string; question: string; sources: string; depth: string; status: string; threadId: string; reportId?: string }[] }
+  | { type: "report"; report: { id: string; company: string; title: string; question: string; bottomLine: string; findings: { text: string; chips: Chip[] }[]; evidence: { metric: string; period: string; value: string; source: string; url?: string }[]; counter: string; unclear: string; followUps: string[]; at: number } }
+  | { type: "ask-user"; prompt: string; kind: "choice" | "number"; options?: string[]; key: string }
+) & { threadId?: string };
 
 export type Quote = {
   ticker: string;
@@ -45,9 +51,12 @@ export type Quote = {
   to?: number | null;
   changePercent?: number | null;
   marketCap?: number | null;
+  closes?: number[];
+  asOf?: string;
   trailingPE?: number | null;
   forwardPE?: number | null;
   priceToBook?: number | null;
+  priceToSales?: number | null;
   error?: string;
 };
 
@@ -56,6 +65,9 @@ export type FilingLink = {
   url: string;
   form: string;
   reportDate: string;
+  filingDate?: string;
+  description?: string;
+  bucket?: "annual" | "quarterly" | "current" | "proxy" | "insider" | "other";
 };
 
 export type Paragraph = { id: string; text: string };
@@ -68,7 +80,7 @@ export type ReaderDoc = {
   sections: Section[];
 };
 
-export type EntryType = "page" | "question" | "highlight" | "finding" | "source";
+export type EntryType = "page" | "question" | "highlight" | "finding" | "source" | "note";
 
 export type Entry = {
   id: string;
@@ -83,6 +95,7 @@ export type Entry = {
   anchor?: string;
   docId?: string;
   pinned?: boolean;
+  by?: "agent" | "user";
 };
 
 export type HighlightInput = {
@@ -95,6 +108,7 @@ export type HighlightInput = {
   title: string;
   anchor?: string;
   docId?: string;
+  by?: "agent" | "user";
 };
 
 export type EnvStatus = {

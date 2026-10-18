@@ -17,7 +17,7 @@ export function kindOf(url: string): string {
   return "news";
 }
 
-const ALLOWANCE = "Tavily's free search allowance has run out. Saved searches still open. Wait for the allowance to reset, then try again.";
+const ALLOWANCE = "Tavily's free search allowance has run out.";
 
 async function fetchTavily(query: string): Promise<SearchHit[]> {
   const key = tavilyKey();

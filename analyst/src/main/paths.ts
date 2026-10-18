@@ -1,8 +1,17 @@
-import { join } from "path";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
+
+function here(): string {
+  try {
+    return __dirname;
+  } catch {
+    return dirname(fileURLToPath(import.meta.url));
+  }
+}
 
 /** analyst/ — the folder that contains package.json. Dev bundle lives in out/main. */
 export function projectRoot(): string {
-  return join(__dirname, "../..");
+  return join(here(), "../..");
 }
 
 export function repoRoot(): string {

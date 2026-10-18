@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 32" fill="none">
+  <g stroke="#E8E6E3" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M16 13.2 L23.2 16.6 L16 20 L8.8 16.6 Z"/>
+    <path d="M16 6.2 L23.2 16.6 M16 6.2 L8.8 16.6 M16 6.2 L16 13.2 M16 6.2 L16 20"/>
+    <path d="M16 26.8 L23.2 16.6 M16 26.8 L8.8 16.6 M16 26.8 L16 13.2 M16 26.8 L16 20"/>
+  </g>
+  <text x="36" y="22" fill="#F4F1EA" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="560" letter-spacing="0.2">Prometheus</text>
+</svg>

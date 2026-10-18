@@ -1,5 +1,6 @@
 {
   "name": "analyst",
+  "productName": "Prometheus",
   "version": "0.1.0",
   "private": true,
   "main": "./out/main/index.js",
@@ -9,12 +10,22 @@
     "preview": "electron-vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-dropdown-menu": "^2.2.1",
+    "@radix-ui/react-scroll-area": "^1.4.0",
+    "@radix-ui/react-separator": "^1.2.0",
+    "@radix-ui/react-slot": "^1.5.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dotenv": "^18.0.8",
     "electron": "^44.9.0",
     "electron-vite": "^6.0.0",
+    "lucide-react": "^1.59.0",
     "openai": "^7.38.0",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "tailwind-merge": "^3.7.0",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@types/react": "^19.3.0",
