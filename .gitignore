@@ -5,4 +5,10 @@ __pycache__/
 .DS_Store
 memory.json
 web_answers.log
+cache/
+analyst/node_modules/
+analyst/out/
+analyst/dist/
+analyst/.env
+analyst/data/
 models/
